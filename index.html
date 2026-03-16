@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cogent — Cognitive Training Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #0c0c10;
+    --surface:     #14141a;
+    --surface2:    #1c1c25;
+    --border:      rgba(255,255,255,0.07);
+    --text:        #f0f0f0;
+    --muted:       #7a7a8c;
+    --memory:      #7c6ff7;
+    --memory-bg:   rgba(124,111,247,0.12);
+    --attention:   #f97316;
+    --attention-bg:rgba(249,115,22,0.11);
+    --speed:       #22d3ee;
+    --speed-bg:    rgba(34,211,238,0.09);
+    --problem:     #4ade80;
+    --problem-bg:  rgba(74,222,128,0.09);
+    --flexibility: #f472b6;
+    --flexibility-bg:rgba(244,114,182,0.09);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:var(--bg); color:var(--text);
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh; overflow-x:hidden;
+  }
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  /* ── HEADER ── */
+  header {
+    position:relative; z-index:10;
+    padding:24px 52px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border);
+  }
+  .logo {
+    font-family:'Syne',sans-serif; font-size:16px; font-weight:700;
+    letter-spacing:-0.3px; display:flex; align-items:center; gap:10px;
+    color:var(--text);
+  }
+  .logo-mark {
+    width:32px; height:32px; border-radius:9px; flex-shrink:0;
+    background:linear-gradient(135deg,var(--memory),var(--attention));
+    display:flex; align-items:center; justify-content:center;
+  }
+  .logo-mark svg { width:16px; height:16px; }
+  .logo-name { color:var(--text); font-weight:700; }
+  .logo-sep { color:rgba(255,255,255,0.15); font-weight:300; margin:0 4px; }
+  .logo-sub { color:var(--muted); font-weight:400; }
+  .beta-badge {
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); background:var(--surface2);
+    border:1px solid var(--border); padding:4px 11px; border-radius:20px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position:relative; z-index:10;
+    padding:68px 52px 52px; max-width:1200px; margin:0 auto;
+  }
+  .hero-eyebrow {
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:22px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .hero-eyebrow::before {
+    content:''; display:inline-block;
+    width:24px; height:1px; background:var(--muted);
+  }
+  h1 {
+    font-family:'Syne',sans-serif; font-weight:800;
+    font-size:clamp(38px,5.5vw,68px); line-height:1.04;
+    letter-spacing:-2px; margin-bottom:20px;
+  }
+  h1 .grad {
+    background:linear-gradient(90deg,var(--memory) 0%,var(--attention) 55%,var(--speed) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .hero-p {
+    font-size:17px; color:var(--muted); max-width:500px;
+    line-height:1.75; font-weight:300; margin-bottom:48px;
+  }
+  .hero-stats {
+    display:flex; gap:0;
+    border-top:1px solid var(--border); padding-top:40px;
+  }
+  .stat {
+    padding-right:40px; margin-right:40px;
+    border-right:1px solid var(--border);
+  }
+  .stat:last-child { border-right:none; }
+  .stat-n {
+    font-family:'Syne',sans-serif; font-size:30px; font-weight:700;
+    line-height:1; margin-bottom:5px;
+  }
+  .stat-l { font-size:13px; color:var(--muted); }
+
+  /* ── MAIN ── */
+  main {
+    position:relative; z-index:10;
+    max-width:1200px; margin:0 auto;
+    padding:0 52px 80px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom:52px;
+    opacity:0; transform:translateY(20px);
+    animation:fadeUp .5s forwards;
+  }
+  .section:nth-child(1){animation-delay:.08s}
+  .section:nth-child(2){animation-delay:.18s}
+  .section:nth-child(3){animation-delay:.28s}
+  .section:nth-child(4){animation-delay:.36s}
+  .section:nth-child(5){animation-delay:.44s}
+  @keyframes fadeUp { to{opacity:1;transform:translateY(0);} }
+
+  .sec-head { display:flex; align-items:flex-start; gap:16px; margin-bottom:20px; }
+  .sec-icon {
+    width:44px; height:44px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; margin-top:2px;
+  }
+  .sec-meta { flex:1; }
+  .sec-name {
+    font-family:'Syne',sans-serif; font-size:18px; font-weight:700;
+    letter-spacing:-.2px; margin-bottom:4px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .sec-pill {
+    font-family:'DM Sans',sans-serif; font-size:11px; font-weight:500;
+    padding:2px 9px; border-radius:20px; letter-spacing:0;
+  }
+  .sec-desc { font-size:14px; color:var(--muted); line-height:1.65; max-width:580px; }
+
+  /* ── GRID ── */
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+
+  /* ── CARD ── */
+  .card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; padding:24px;
+    cursor:pointer; position:relative; overflow:hidden;
+    transition:transform .22s cubic-bezier(.4,0,.2,1),
+               background .22s, border-color .22s;
+    display:block; text-decoration:none;
+  }
+  .card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    opacity:0; transition:opacity .22s;
+  }
+  .card:hover { transform:translateY(-3px); background:var(--surface2); border-color:rgba(255,255,255,0.13); }
+  .card:hover::before { opacity:1; }
+  .card.soon { cursor:default; opacity:.38; filter:saturate(.25); }
+  .card.soon:hover { transform:none; background:var(--surface); border-color:var(--border); }
+  .card.soon:hover::before { opacity:0; }
+
+  .card-glow {
+    position:absolute; top:-28px; right:-28px;
+    width:72px; height:72px; border-radius:50%; opacity:.14;
+    transition:opacity .22s; pointer-events:none;
+  }
+  .card:hover .card-glow { opacity:.24; }
+
+  .card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .card-icon { width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+
+  .badge {
+    font-size:10px; font-weight:500; padding:3px 8px;
+    border-radius:20px; letter-spacing:.02em;
+  }
+  .badge-live  { background:rgba(74,222,128,.14); color:#4ade80; border:1px solid rgba(74,222,128,.22); }
+  .badge-soon  { background:rgba(255,255,255,.05); color:var(--muted); border:1px solid var(--border); }
+
+  .card-name {
+    font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+    letter-spacing:-.1px; margin-bottom:6px; color:var(--text);
+  }
+  .card-desc { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+
+  .card-foot { display:flex; align-items:center; justify-content:space-between; }
+  .diff { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted); }
+  .dots { display:flex; gap:3px; }
+  .df,.de { width:6px; height:6px; border-radius:50%; }
+  .play {
+    font-size:12px; font-weight:500; padding:6px 12px;
+    border-radius:8px; transition:all .18s;
+  }
+
+  /* category colours */
+  .mem .sec-icon   { background:var(--memory-bg); }
+  .mem .sec-pill   { background:var(--memory-bg); color:var(--memory); }
+  .mem .card::before { background:var(--memory); }
+  .mem .card-glow  { background:var(--memory); }
+  .mem .card-icon  { background:var(--memory-bg); }
+  .mem .df         { background:var(--memory); }
+  .mem .de         { background:rgba(124,111,247,.2); }
+  .mem .play       { background:var(--memory-bg); color:var(--memory); }
+  .mem .card:hover .play { background:var(--memory); color:#fff; }
+
+  .att .sec-icon   { background:var(--attention-bg); }
+  .att .sec-pill   { background:var(--attention-bg); color:var(--attention); }
+  .att .card::before { background:var(--attention); }
+  .att .card-glow  { background:var(--attention); }
+  .att .card-icon  { background:var(--attention-bg); }
+  .att .df         { background:var(--attention); }
+  .att .de         { background:rgba(249,115,22,.2); }
+  .att .play       { background:var(--attention-bg); color:var(--attention); }
+  .att .card:hover .play { background:var(--attention); color:#fff; }
+
+  .spd .sec-icon   { background:var(--speed-bg); }
+  .spd .sec-pill   { background:rgba(255,255,255,.05); color:var(--muted); }
+  .spd .card::before { background:var(--speed); }
+  .spd .card-glow  { background:var(--speed); }
+  .spd .card-icon  { background:var(--speed-bg); }
+  .spd .df         { background:var(--speed); }
+  .spd .de         { background:rgba(34,211,238,.2); }
+
+  .prb .sec-icon   { background:var(--problem-bg); }
+  .prb .sec-pill   { background:rgba(255,255,255,.05); color:var(--muted); }
+  .prb .card::before { background:var(--problem); }
+  .prb .card-glow  { background:var(--problem); }
+  .prb .card-icon  { background:var(--problem-bg); }
+  .prb .df         { background:var(--problem); }
+  .prb .de         { background:rgba(74,222,128,.2); }
+
+  .flx .sec-icon   { background:var(--flexibility-bg); }
+  .flx .sec-pill   { background:rgba(255,255,255,.05); color:var(--muted); }
+  .flx .card::before { background:var(--flexibility); }
+  .flx .card-glow  { background:var(--flexibility); }
+  .flx .card-icon  { background:var(--flexibility-bg); }
+  .flx .df         { background:var(--flexibility); }
+  .flx .de         { background:rgba(244,114,182,.2); }
+
+
+  /* ── FOOTER ── */
+  footer {
+    position:relative; z-index:10; border-top:1px solid var(--border);
+    padding:24px 52px; display:flex; align-items:center; justify-content:space-between;
+    font-size:12px; color:var(--muted);
+  }
+
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-thumb { background:var(--surface2); border-radius:3px; }
+
+  @media(max-width:900px) {
+    header,main,.hero { padding-left:20px; padding-right:20px; }
+    .grid { grid-template-columns:1fr; }
+    h1 { letter-spacing:-1px; }
+    .hero-stats { flex-wrap:wrap; gap:24px; }
+    .stat { border-right:none; padding-right:0; margin-right:0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="8" r="3" fill="white" opacity=".9"/>
+        <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M11.53 4.47l-1.42 1.42M4.95 11.53l-1.42 1.42" stroke="white" stroke-width="1.4" stroke-linecap="round" opacity=".6"/>
+      </svg>
+    </div>
+    Cogent Cognitive Training Platform
+  </div>
+  <div class="beta-badge">Beta</div>
+</header>
+
+<section class="hero">
+
+  <h1>Sharpen the way<br>your <span class="grad">brain works.</span></h1>
+  <p class="hero-p">Science-backed exercises designed to improve memory, sustained attention, processing speed, and cognitive flexibility — built for teams.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n" style="color:var(--memory)">4</div><div class="stat-l">Games available now</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--attention)">5</div><div class="stat-l">Cognitive domains</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--speed)">~5 min</div><div class="stat-l">Daily session</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--problem)">Free</div><div class="stat-l">No login required</div></div>
+  </div>
+</section>
+
+<main>
+
+  <!-- ── MEMORY ── -->
+  <div class="section mem">
+    <div class="sec-head">
+      <div class="sec-icon">🧠</div>
+      <div class="sec-meta">
+        <div class="sec-name">Memory <span class="sec-pill">2 games</span></div>
+        <div class="sec-desc">Exercises targeting how the brain encodes, retains, and retrieves information — from spatial working memory to verbal long-term recall under interference.</div>
+      </div>
+    </div>
+    <div class="grid">
+
+      <div class="card" onclick="location.href='games/spatial-span.html'">
+        <div class="card-glow"></div>
+        <div class="card-top">
+          <div class="card-icon">🗺️</div>
+          <span class="badge badge-live">● Live</span>
+        </div>
+        <div class="card-name">Spatial Span</div>
+        <div class="card-desc">A grid of tiles flashes in a sequence — remember the exact positions and tap them back in order. Span increases as you improve.</div>
+        <div class="card-foot">
+          <div class="diff"><div class="dots"><div class="df"></div><div class="de"></div><div class="de"></div></div>Easy</div>
+          <div class="play">Play ▶</div>
+        </div>
+      </div>
+
+      <div class="card" onclick="location.href='games/word-recall.html'">
+        <div class="card-glow"></div>
+        <div class="card-top">
+          <div class="card-icon">📝</div>
+          <span class="badge badge-live">● Live</span>
+        </div>
+        <div class="card-name">Word List Recall</div>
+        <div class="card-desc">Study a list of words, complete a maths distractor that clears working memory, then identify every word you can recall from a mixed set.</div>
+        <div class="card-foot">
+          <div class="diff"><div class="dots"><div class="df"></div><div class="df"></div><div class="df"></div></div>Hard</div>
+          <div class="play">Play ▶</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── ATTENTION ── -->
+  <div class="section att">
+    <div class="sec-head">
+      <div class="sec-icon">🎯</div>
+      <div class="sec-meta">
+        <div class="sec-name">Attention / Focus <span class="sec-pill">2 games</span></div>
+        <div class="sec-desc">Train selective attention and rapid visual search — the ability to identify relevant targets quickly while filtering out irrelevant noise.</div>
+      </div>
+    </div>
+    <div class="grid">
+
+      <div class="card" onclick="location.href='games/catch-nuggets.html'">
+        <div class="card-glow"></div>
+        <div class="card-top">
+          <div class="card-icon">◎</div>
+          <span class="badge badge-live">● Live</span>
+        </div>
+        <div class="card-name">Target Filter</div>
+        <div class="card-desc">Geometric targets fall through the field — click the orange circles, ignore grey shapes. Speed increases over 30 seconds. Score penalises false alarms.</div>
+        <div class="card-foot">
+          <div class="diff"><div class="dots"><div class="df"></div><div class="df"></div><div class="de"></div></div>Medium</div>
+          <div class="play">Play ▶</div>
+        </div>
+      </div>
+
+      <div class="card" onclick="location.href='games/spot-odd.html'">
+        <div class="card-glow"></div>
+        <div class="card-top">
+          <div class="card-icon">🔍</div>
+          <span class="badge badge-live">● Live</span>
+        </div>
+        <div class="card-name">Spot the Odd One</div>
+        <div class="card-desc">A grid of identical items — one is different. Find it as fast as possible. Grid size scales with your streak. Both speed and accuracy contribute to your score.</div>
+        <div class="card-foot">
+          <div class="diff"><div class="dots"><div class="df"></div><div class="de"></div><div class="de"></div></div>Easy</div>
+          <div class="play">Play ▶</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SPEED ── -->
+  <div class="section spd">
+    <div class="sec-head">
+      <div class="sec-icon">⚡</div>
+      <div class="sec-meta">
+        <div class="sec-name">Speed &amp; Reaction <span class="sec-pill" style="background:rgba(255,255,255,.05);color:var(--muted)">Coming Soon</span></div>
+        <div class="sec-desc">Measure and improve how fast your brain processes visual signals and triggers accurate responses.</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card soon">
+        <div class="card-top"><div class="card-icon">⚡</div><span class="badge badge-soon">Coming Soon</span></div>
+        <div class="card-name">Reaction Time</div>
+        <div class="card-desc">Screen flashes — respond as fast as possible. Tracks your visual reflex in milliseconds across multiple trials.</div>
+        <div class="card-foot"><div class="diff"><div class="dots"><div class="df"></div><div class="de"></div><div class="de"></div></div>Easy</div></div>
+      </div>
+      <div class="card soon">
+        <div class="card-top"><div class="card-icon">🎯</div><span class="badge badge-soon">Coming Soon</span></div>
+        <div class="card-name">Aim Trainer</div>
+        <div class="card-desc">Targets appear at random positions — click all of them as quickly and accurately as you can before time runs out.</div>
+        <div class="card-foot"><div class="diff"><div class="dots"><div class="df"></div><div class="de"></div><div class="de"></div></div>Easy</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROBLEM SOLVING ── -->
+  <div class="section prb">
+    <div class="sec-head">
+      <div class="sec-icon">🧩</div>
+      <div class="sec-meta">
+        <div class="sec-name">Problem Solving <span class="sec-pill" style="background:rgba(255,255,255,.05);color:var(--muted)">Coming Soon</span></div>
+        <div class="sec-desc">Logic, pattern recognition, and deductive reasoning challenges that push analytical thinking.</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card soon">
+        <div class="card-top"><div class="card-icon">🔢</div><span class="badge badge-soon">Coming Soon</span></div>
+        <div class="card-name">Number Patterns</div>
+        <div class="card-desc">Identify the rule in a number sequence and predict what comes next. Complexity increases with each correct answer.</div>
+        <div class="card-foot"><div class="diff"><div class="dots"><div class="df"></div><div class="df"></div><div class="de"></div></div>Medium</div></div>
+      </div>
+      <div class="card soon">
+        <div class="card-top"><div class="card-icon">🔷</div><span class="badge badge-soon">Coming Soon</span></div>
+        <div class="card-name">Shape Logic</div>
+        <div class="card-desc">A matrix of shapes with one cell missing — deduce the correct answer from row and column patterns.</div>
+        <div class="card-foot"><div class="diff"><div class="dots"><div class="df"></div><div class="df"></div><div class="de"></div></div>Medium</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FLEXIBILITY ── -->
+  <div class="section flx">
+    <div class="sec-head">
+      <div class="sec-icon">🔀</div>
+      <div class="sec-meta">
+        <div class="sec-name">Flexibility / Task-Switching <span class="sec-pill" style="background:rgba(255,255,255,.05);color:var(--muted)">Coming Soon</span></div>
+        <div class="sec-desc">Train rapid mental switching between rules and cognitive sets — the foundation of adaptability under pressure.</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card soon">
+        <div class="card-top"><div class="card-icon">🔄</div><span class="badge badge-soon">Coming Soon</span></div>
+        <div class="card-name">Stroop Challenge</div>
+        <div class="card-desc">Name the ink colour, not the written word. The classic cognitive interference task — harder than it sounds.</div>
+        <div class="card-foot"><div class="diff"><div class="dots"><div class="df"></div><div class="df"></div><div class="de"></div></div>Medium</div></div>
+      </div>
+      <div class="card soon">
+        <div class="card-top"><div class="card-icon">↔️</div><span class="badge badge-soon">Coming Soon</span></div>
+        <div class="card-name">Rule Switch</div>
+        <div class="card-desc">Categorise items by rules that alternate unpredictably. Tests how quickly you can reconfigure your mental model.</div>
+        <div class="card-foot"><div class="diff"><div class="dots"><div class="df"></div><div class="df"></div><div class="de"></div></div>Medium</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>Cogent · Cognitive Training Platform</div>
+  <div>4 games live · 6 coming soon</div>
+</footer>
+
+
+</body>
+</html>
